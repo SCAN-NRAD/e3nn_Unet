@@ -1,1 +1,1 @@
-# e3nn-Unet
+# e3nn_Unet
