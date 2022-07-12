@@ -146,7 +146,7 @@ class Identity(nn.Module):
 
 class UNet(SegmentationNetwork):
     def __init__(self, input_irreps, output_irreps, diameter, num_radial_basis, steps, batch_norm='instance', n=2, n_downsample = 2, equivariance = 'SO3',
-        lmax = 2, down_op = 'maxpool3d', stride = 2, scale =2,,
+        lmax = 2, down_op = 'maxpool3d', stride = 2, scale =2,
         is_bias = True,scalar_upsampling=False,dropout_prob=0,cutoff=False):
         """Equivariant UNet with physical units
 
