@@ -24,15 +24,17 @@ class ConvolutionBlock(nn.Module):
 
         irreps_scalars = Irreps( [ (mul, ir) for mul, ir in irreps_hidden if ir.l == 0 ] )
         irreps_gated   = Irreps( [ (mul, ir) for mul, ir in irreps_hidden if ir.l > 0  ] )
-        fe = sum(mul for mul,ir in irreps_gated if ir.p == 1)
-        fo = sum(mul for mul,ir in irreps_gated if ir.p == -1)
-        irreps_gates = Irreps(f"{fe}x0e+{fo}x0o").simplify()
+        irreps_gates = Irreps(f"{irreps_gated.num_irreps}x0e")
 
+        #fe = sum(mul for mul,ir in irreps_gated if ir.p == 1)
+        #fo = sum(mul for mul,ir in irreps_gated if ir.p == -1)
+        #irreps_gates = Irreps(f"{fe}x0e+{fo}x0o").simplify()
         if irreps_gates.dim == 0:
             irreps_gates = irreps_gates.simplify()
             activation_gate = []
         else:
-            activation_gate = [torch.sigmoid, torch.tanh][:len(activation)]
+            activation_gate = [torch.sigmoid]
+            #activation_gate = [torch.sigmoid, torch.tanh][:len(activation)]
 
         self.gate1 = Gate(irreps_scalars, activation, irreps_gates, activation_gate, irreps_gated)
         self.conv1 = Convolution(input, self.gate1.irreps_in, irreps_sh, diameter,num_radial_basis,steps,cutoff=cutoff)
@@ -68,7 +70,7 @@ class Down(nn.Module):
         self.down_irreps_out = []
 
         for n in range(n_downsample+1):
-            irreps_hidden = Irreps(f"{4*ne}x0e + {4*no}x0o + {2*ne}x1e + {ne}x2e + {2*no}x1o + {no}x2o").simplify()
+            irreps_hidden = Irreps(f"{4*ne}x0e + {4*no}x0o + {2*ne}x1e +  {2*no}x1o + {ne}x2e + {no}x2o").simplify()
             block = ConvolutionBlock(input,irreps_hidden,activation,irreps_sh,BN, diameters[n],num_radial_basis,steps[n],dropout_prob,cutoff)
             blocks.append(block)
             self.down_irreps_out.append(block.irreps_out)
@@ -80,7 +82,7 @@ class Down(nn.Module):
 
         pooling = []
         for n in range(n_downsample):
-            pooling.append(DynamicPool3d(scale[n],steps[n],down_op))
+            pooling.append(DynamicPool3d(scale[n],steps[n],down_op,self.down_irreps_out[n]))
 
         self.down_pool = nn.ModuleList(pooling)
 
@@ -143,15 +145,19 @@ class Identity(nn.Module):
         return x
 
 class UNet(SegmentationNetwork):
-    def __init__(self, n_classes_scalar, n_classes_vector, diameter, num_radial_basis, steps, batch_norm='instance', n=2, n_downsample = 2, equivariance = 'SO3',
-        lmax = 2, down_op = 'maxpool3d', stride = 2, scale =2,input_irreps="0e",
+    def __init__(self, input_irreps, output_irreps, diameter, num_radial_basis, steps, batch_norm='instance', n=2, n_downsample = 2, equivariance = 'SO3',
+        lmax = 2, down_op = 'maxpool3d', stride = 2, scale =2,,
         is_bias = True,scalar_upsampling=False,dropout_prob=0,cutoff=False):
         """Equivariant UNet with physical units
 
         Parameters
         ----------
-        n_classes_scalar : int
-            number of scalar classes
+        input_irreps : str
+            input representations
+            example: "1x0e" when one channel of scalar values
+        output_irreps : str
+            output representations
+            example: "4x0e" when four channels of scalar values
         n_classes_vector : int
             number of vector classes
         diameter : float
@@ -183,8 +189,6 @@ class UNet(SegmentationNetwork):
         scale : int, optional
             size of pooling diameter
             in physical units, by default 2
-        input_irreps : str, optional
-            input representations, by default "0e" when only scalar values
         is_bias : bool, optional
             defines whether or not to add a bias, by default True
         scalar_upsampling : bool, optional
@@ -197,13 +201,11 @@ class UNet(SegmentationNetwork):
         """
         super().__init__()
 
-        self.n_classes_scalar = n_classes_scalar
-        self.num_classes = n_classes_scalar + 3*n_classes_vector
-        output_irreps = Irreps(f"{n_classes_scalar}x0e + {n_classes_vector}x1e") 
+        self.n_classes_scalar = Irreps(output_irreps).count('0e')
+        self.num_classes = self.n_classes_scalar
         
         self.n_downsample = n_downsample
-
-    
+        self.conv_op = nn.Conv3d #Needed in order to use nnUnet predict_3D
 
         assert batch_norm in ['None','batch','instance'], "batch_norm needs to be 'batch', 'instance', or 'None'"
         assert down_op in ['maxpool3d','average','lowpass'], "down_op needs to be 'maxpool3d', 'average', or 'lowpass'"
@@ -226,8 +228,8 @@ class UNet(SegmentationNetwork):
             irreps_sh = Irreps.spherical_harmonics(lmax, -1)
             ne = n
             no = n
-        scales = [scale*2**i for i in range(n_downsample)]
-        diameters = [diameter*2**i for i in range(n_downsample+1)]
+        scales = [scale*2**i for i in range(n_downsample)] #TODO change 2 to variable factor
+        diameters = [diameter*2**i for i in range(n_downsample+1)] #TODO change 2 to variable factor
 
         steps_array = [steps]
         for i in range(n_downsample):

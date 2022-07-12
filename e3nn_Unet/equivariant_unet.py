@@ -7,7 +7,7 @@ from e3nn.o3 import Irreps, Linear
 from nnunet.network_architecture.neural_network import SegmentationNetwork
 from .voxel_convolution import ConvolutionVoxel as Convolution
 
-
+#Deprecated
 class ConvolutionBlock(nn.Module):
     def __init__(self, input, irreps_hidden, activation, irreps_sh, normalization,kernel_size,dropout_prob,cutoff):
         super().__init__()
