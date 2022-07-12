@@ -13,7 +13,7 @@ setup(
     ],
     keywords='MRI, segmentation',
     packages=['e3nn_Unet'],
-    package_dir={'e3nn_Unet': '/e3nn_Unet'},
+    package_dir={'e3nn_Unet': './e3nn_Unet'},
     python_requires='>=3.7',
     install_requires=['e3nn==0.3.5',
                       'nnunet==1.6.5',
