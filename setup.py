@@ -9,7 +9,7 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering',
-        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.7',
     ],
     keywords='MRI, segmentation',
     package_dir={'': 'e3nn_Unet'},
