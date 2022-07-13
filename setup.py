@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='e3nn_Unet',
-    version='0.1.1',
+    version='0.1.0',
     description='Segmentation network with O3 and SO3 equivariant convolutions',
     url='https://github.com/SCAN-NRAD/e3nn_Unet',
     classifiers=[
