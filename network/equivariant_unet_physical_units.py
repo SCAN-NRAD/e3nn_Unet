@@ -253,7 +253,7 @@ class UNet(SegmentationNetwork):
 
         if is_bias:
             #self.bias = nn.parameter.Parameter(torch.Tensor(n_classes_scalar))
-            self.bias = nn.parameter.Parameter(torch.zeros(n_classes_scalar))
+            self.bias = nn.parameter.Parameter(torch.zeros(self.n_classes_scalar))
         else:
             self.register_parameter('bias', None)
 
