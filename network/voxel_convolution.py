@@ -9,7 +9,7 @@ import torch
 from e3nn import o3
 from e3nn.o3 import FullyConnectedTensorProduct, Linear
 #from e3nn.math import soft_one_hot_linspace
-from soft_one_hot_linspace import soft_one_hot_linspace
+from .soft_one_hot_linspace import soft_one_hot_linspace
 
 
 class Convolution(torch.nn.Module):
