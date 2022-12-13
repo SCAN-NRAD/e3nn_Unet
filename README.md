@@ -15,10 +15,12 @@ pip install -e .
 
 ## Sample UNet
 
-The following commands create a U-net for a segmentation task with three 
-scalar classes, 0 vector classes, 2 downsampling steps, and S03 equivariance.
+The following commands create a U-net for a segmentation task with two 
+input scalar channels, 2 downsampling steps, and SO3 equivariance
+and which outputs 5 scalar classes. In this example the kernel diameter 
+is set to five units and the voxel dimensions are 1x1x1 units.
 
 ```bash
-from e3nn_Unet.network.equivariant_unet import UNet
-net = equivariant_unet.UNet(3,0,n_downsample=2,equivariance='SO3') 
+from e3nn_Unet.network.equivariant_unet_physical_units import UNet
+net = UNet('2x0e','5x0e',5,5,(1,1,1),n_downsample=2,equivariance='SO3')
 ```
