@@ -1,8 +1,8 @@
 # About e3nn_Unet
 
 Segmentation networks based on e3nn O3 and SO3 equivariant convolutions.
-The networks allow for scalar or vector inputs, user-defined number and 
-type of downsampling operations, type of equivariance, and number of
+The networks allow for scalar, vector or tensor inputs, user-defined number and 
+type of downsampling operations, type of equivariance, and number of hidden
 irreps.
 
 ## Installation
