@@ -36,4 +36,4 @@ problems with the hippocampus and brain stem. Finally the two bottom rows show u
 for both a non-equivariant model trained with moderate rotational equivariance and a model trained with
 no rotational equivariance.
 
-![](https://github.com/SCAN-NRAD/e3nn_Unet/blob/main/comparison.gif ) 
+![](https://github.com/SCAN-NRAD/e3nn_Unet/blob/main/comparison.gif?raw=true) 
