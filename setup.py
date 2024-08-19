@@ -18,7 +18,7 @@ setup(
     install_requires=['e3nn==0.5.1',
                       'nnunet>=1.6.5',
                       'numpy>=1.20.3',
-                      'torch>=1.8.1'],
+                      'torch==1.8.1'],
     license="MIT",
     license_files="LICENSE",
 )
